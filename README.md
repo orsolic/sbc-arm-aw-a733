@@ -27,3 +27,4 @@ Plans are to thinker with it, enable as much as usable "desktop"/workshop Linux/
 2026.03.  
 2026.07.  
 2026.10.  
+[sound analog](./doc/sound-analog.md)  

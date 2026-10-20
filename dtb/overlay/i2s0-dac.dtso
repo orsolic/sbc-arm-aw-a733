@@ -1,0 +1,97 @@
+/dts-v1/;
+/plugin/;
+
+/{
+	pcm5102a: pcm5102a {
+		compatible = "ti,pcm5102a";
+		#sound-dai-cells = <0>;
+		status = "okay";
+	};
+};
+
+// A7Z header
+// PB4	MCLK
+// PB5	BCLK
+// PB6	LRCK
+// PB7	OUT0
+
+&pio {
+	i2s0_pin_mcblk: i2s0@0 {
+		pins = "PB4";
+		function = "i2s0_mclk";
+		allwinner,drive = <1>;
+		bias-disable;
+	};
+
+	i2s0_pin_bclk: i2s0@1 {
+		pins = "PB5";
+		function = "i2s0_bclk";
+		allwinner,drive = <1>;
+		bias-disable;
+	};
+
+	i2s0_pin_lrck: i2s0@2 {
+		pins = "PB6";
+		function = "i2s0_lrck";
+		allwinner,drive = <1>;
+		bias-disable;
+	};
+
+	i2s0_pin_dout0: i2s0@3 {
+		pins = "PB7";
+		function = "i2s0_dout0";
+		allwinner,drive = <1>;
+		bias-pull-down;
+	};
+
+	i2s0_pin_din0: i2s0@4 {
+		pins = "PB8";
+		function = "i2s0_din0";
+		allwinner,drive = <1>;
+		bias-pull-down;
+	};
+
+	i2s0_pins: i2s0@5 {
+		pins = "PB4", "PB5", "PB6", "PB8", "PB7";
+		function = "io_disabled";
+		allwinner,drive = <1>;
+		bias-disable;
+	};
+};
+
+&i2s0_plat {
+	tdm-num = <0>;
+	tx-pin = <0>;
+	rx-pin = <0>;
+
+	tx-hub-en;
+	rx-sync-en;
+
+	pinctrl-used;
+	pinctrl-names = "default","sleep";
+	pinctrl-0 = <&i2s0_pin_mcblk &i2s0_pin_bclk &i2s0_pin_lrck &i2s0_pin_dout0 &i2s0_pin_din0>;
+	pinctrl-1 = <&i2s0_pins>;
+
+	status = "okay";
+};
+
+&i2s0_mach {
+	soundcard-mach,format = "i2s";
+	soundcard-mach,frame-master = <&i2s0_cpu>;
+	soundcard-mach,bitclock-master = <&i2s0_cpu>;
+	soundcard-mach,name = "pcm5102a-dac";
+	soundcard-mach,slot-num = <2>;
+	soundcard-mach,slot-width = <32>;
+
+	status = "okay";
+
+	i2s0_cpu: soundcard-mach,cpu {
+		sound-dai = <&i2s0_plat>;
+		soundcard-mach,pll-fs = <1>;
+		soundcard-mach,mclk-fs = <256>;
+	};
+
+	i2s0_codec: soundcard-mach,codec {
+		sound-dai = <&pcm5102a>;
+	};
+};
